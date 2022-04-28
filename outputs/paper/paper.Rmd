@@ -7,12 +7,14 @@ output:
   html_document:
     df_print: paged
 subtitle: "Social media becomes more and more important in affecting the outcome of voting in US election"
-abstract:  study aims to investigate whether social media like twitter, facebook is indeed affect the US election based on the Democracy Fund + UCLA Nationscape survey data  by logistic regression model. Logistic regression model is a simple but widely used model which is appropriate for modelling binary outcome and interpreting factors affect the binary outcome. This study finds that not usage group of socila media twitter and facebook is about 45% times higher in odds of voting for Trump than who uses socila media twitter and facebook and we have 95% confidence this  would fall into the range from 13% to 86%. 
+abstract: study aims to investigate whether social media like twitter, facebook is indeed affect the US election based on the Democracy Fund + UCLA Nationscape survey data  by logistic regression model. Logistic regression model is a simple but widely used model which is appropriate for modelling binary outcome and interpreting factors affect the binary outcome. This study finds that not usage group of socila media twitter and facebook is about 45% times higher in odds of voting for Trump than who uses socila media twitter and facebook and we have 95% confidence this  would fall into the range from 13% to 86%. 
 thanks: 'Code and data are available at: https://github.com/Amy527/finalproj304.'
 linestretch: 1.5
 toc: no
 bibliography: references.bib
 ---
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE)
