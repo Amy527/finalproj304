@@ -1,0 +1,417 @@
+---
+title: "Why Elon Musk Buys Twitter and Why Donald Trump Lanchs Truth Social?"
+author: "Yinuo Zhang"
+date: "27 April 2022"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+subtitle: "Social media becomes more and more important in affecting the outcome of voting in US election"
+abstract:  study aims to investigate whether social media like twitter, facebook is indeed affect the US election based on the Democracy Fund + UCLA Nationscape survey data  by logistic regression model. Logistic regression model is a simple but widely used model which is appropriate for modelling binary outcome and interpreting factors affect the binary outcome. This study finds that not usage group of socila media twitter and facebook is about 45% times higher in odds of voting for Trump than who uses socila media twitter and facebook and we have 95% confidence this  would fall into the range from 13% to 86%. 
+thanks: 'Code and data are available at: https://github.com/Amy527/finalproj304.'
+linestretch: 1.5
+toc: no
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE)
+#load packages
+library(tidyverse)
+library(broom)
+library(ggplot2)
+library(dplyr)
+library(knitr)
+library(scales)
+library(ggthemes)
+library(ggrepel)
+# read data
+survey <- readRDS("data/2020.rds")
+```
+
+# Introduction
+
+Recently, in addition to the Russian Ukrainian war occupying the hot spot of world news, another hot spot is that Elon Musk has become the largest shareholder of Twitter and wants to wholly acquire twitter. During the general election more than a year ago, Trump was blocked by twitter due to inciting people to make trouble on Capitol Hill. As we all know, musk has been close to the Republican Party for many years, After trump was elected as president in 2016, he immediately invited musk to join the presidential Advisory Committee. Therefore, some Republican lawmakers hope musk can let twitter lift the ban on Trump's account. Since Trump lost the last election, he has repeatedly proposed to prepare for the next election in public, Trump even has recently launched the social media platform truth social.
+
+It is known that Musk's relationship with Democratic President Biden is not good for many reasons. For example, musk believes that trade unions will affect productivity which is obviously different from the basic line of the Democratic Party. We all know that no social media can beat twitter in terms of rhythm in the election process. Therefore, whether Trump launches truth social or Musk buys twitter, it indicates that the outlet of the next US election must be social media, and this is likely to indicate that Musk will strongly support the Republican Party in the next US election, and may even run for president himself. Musk's reason for running for president is also very simple. Musk is a very potential leader and genius, many very powerful projects  such as neuralink, SpaceX and Starlink star chain were founded by Musk. However, Musk also has an ultimate dream of colonizing Mars, but no matter how rich and appealing he is, colonizing Mars is not a task that an enterprise can complete, so musk may run for president to use the power of the whole country to realize the dream of colonizing Mars. As Twitter is known as the mouthpiece of political public opinion in the United States, buys twitter means that Musk will be easier to lead the voting tendency of American voters in the presidential election.
+
+Based on the above backgroud, this study aims to investigate whether social media like twitter, facebook is indeed affect the US election based on the Democracy Fund + UCLA Nationscape survey data (@citesurvey) by logistic regression model. Logistic regression model is a simple but widely used model which is appropriate for modelling binary outcome and interpreting factors affect the binary outcome. This study uses whether voters voted Trump in 2020 US election as response which is binary outcome and this study also interested in how the related factors affect the outcome of the 2020 US election especially for the usage of social media twitter, facebook. This study applied the Logistic regression model to investigate the question of interest and obtained the estimates of effects of social media twitter, facebook on voting outcome for Trump based on the Democracy Fund + UCLA ationscape survey data (@citesurvey).
+
+
+The study is important because we would get estimates of effects of social media twitter, facebook on voting outcome for Trump to investigate whether social media like twitter is important in affecting US election, we could use the results to explain why Trump launched the social media platform truth social and why Elon Musk wants to wholly acquire twitter. Also, this study might be a good start point for people who are interested in this topic area for their work.
+
+The study was organized as following: In data section, we introduce the Democracy Fund + UCLA ationscape survey data and give an overview of reflections from the survey data. In model section, we introduce the logistic regression model. In results section, we interpret the model results as well as model diagnostics. At last, in the discussion section, we discuss the findings, results and weaknesses of the study as well as future work. The study is carried out using R (@citeR),  Rmarkdown (@citermarkdown), tidyverse (@citetidyverse), ggplot2(@citeggplot2), ggthemes(@citeggthemes), ggrepel(@citeggrepel),  dplyr (@citedplyr), scales (@citescales), broom (@citebroom),  knitr (@citeknitr). 
+
+
+# Data
+
+The source of the data used in this study comes from the  U.S.presidential election 2020 survey data by Democracy Fund + UCLA Nationscape released on 12 Jan, 2021 (@citesurvey). This study uses the survey data to build a logistic regression model to interpret the effects of social media like twitter on the outcome of voting for Trump after controlled several important factors like age, gender, income level, race, voted outcome in 2016 and so on. 
+
+Age differences played an important role in the history of US election, this study also included it and divided into 4 groups: 18-35, 36-50, 51-65 and 65+ which is already widely used by lots of former studies and supposed to best describe the differences between age groups. Gender difference is also important, males tend to be more conservative. Race is important too, it is known whites support Trump more than others. This study merged difference races and divided races into 3 groups: white, black and other group. It is similar for hispanic or not. And for income, richer people like Trump more than others, Trump supported by richer people not only due to himself is rich but also he has lots of policy beneficial for rich voters. This study uses the median income level which is around 39999 dollars in the survey to divide the voters, voters who are above this level is marked as "above median" which stands for rich voters and voters who are below this level is marked as "median or below" which stands for poor voters. For education, voters with different education levels also have different attitudes on voting for Trump too. This study divided voters into 3 groups: High school or below, BA or below and Above BA. Voted outcome in 2016 is also included, it might be useful in describing the changes or consistency of attitudes on voting for Trump between 2016 and 2020. Also, this study considers a new covariate which is whether voters worried ban of twitter, there are 2 groups: worried and not worried, this factor can be used to describe the degree of attention on social media like twitter. The usage of social media like twitter and facebook is used as the main independent variable of interest. At last, the response is created from the outcome of voting in 2020, voted Trump is encoded as 1, otherwise encoded as 0.
+
+
+The survey data comes from comes from the  U.S.presidential election 2020 survey data by Democracy Fund + UCLA Nationscape released on 12 Jan, 2021 (@citesurvey). The sampling method used in the survey is the stratified sampling, the voter study group in Nationscape divided the  potential voters into subgroups by age, race, gender, education and so on, and then the voter study group applied simple randomly sampling in each of the stratified group. The population of the survey is the United States voters. The sampling frame is first dividing voters into subgroups by age, race, gender, education and so on using stratified sampling and then pplied simple randomly sampling in each of the stratified group. The sample unit of the survey is US adult who is supposed to be a voter and who conducted the survey online.
+
+The sample size of the sample by the UCLA Democracy Fund Voter Study Group is 4138 originally, after data cleanning, this study uses a cleaned version with 3023 voters. There are originally over 260 variables, this study considers 12 of them.  The survey offered two language options - Spanish or English. The survey was conducted online anywhere the respondent has access to networked device. 
+
+The survey was designed by the UCLA Democracy Fund Voter Study Group and was aimed to cover lots of possible factors which could affect the voting and reflect the voting behavior of voters. There are many vriables included to make the survey to be a high quality one and reliable one. It also includes different plotical opinions like medical health care, ban of gun and so on as well as covid-19 related information.
+
+The survey was reliable and could be a good sample of US voters because it was carefully designed by the UCLA Democracy Fund Voter Study Group, although it was conducted online, it was desigend weekly by the Voter Study Group so that the Voter Study Group could compare the results among weeks to select reliable answers of the survey. People who have too fast answers which completed in several seconds or too short time would be dropped, people who have similar answers across the questionnaires would be dropped too.
+The Voter Study Group also removed people who did not complete the survey. Also the Voter Study Group designed many types of question to make the survey as accurate as possible. 
+
+However, the survey also has  some weaknesses. First, it was an online survey, it still could have selection bias either due to division of subgroups and selection process. Second, people received the online survey might not answer it or people might forgot to answer it which lead to non-response bias. Third, there is some imbance of subgroups in the survey sample that voters from some states is more than others. At last, the survey can only ensure people complete the survey not too  fast or not with too many similar answers, as the survey has too many questions and it was conduceted weekly online, it is hard to make sure people answer all questions seriously.
+
+
+Figure 1 shows Donald Trump supporters' profiles in the survey, clealy, older white males are the main supporters for Trump while the non-supporters are maninly blacks.
+
+
+```{r  p1, fig.height=7.8, fig.width=8.8, fig.cap="Donald Trump supporters' profiles in the survey"}
+d1 <- survey %>% group_by(agegroup,gender, race ) %>%
+  summarise(rate = mean(Trump2020))
+d1$group <- paste0(d1$agegroup," ", d1$gender, " ", d1$race)
+d1 <- d1 %>% arrange(desc(-rate))
+d1$group <- factor(d1$group, levels = unique(d1$group))
+ggplot(d1, aes(group,rate)) +
+  geom_col(fill = "indianred") + coord_flip() +
+  theme_economist_white() +
+  labs(x = "", title = "Donald Trump supporters' profiles",
+       y = "Voting rate") +
+  scale_y_continuous(label = percent)
+```
+
+Figure 2 shows Donald Trump supporters' profiles by states in the survey, clearly, the differences in votes of Trump among states are obvious, it can be found that some voters in states like wyoming are most likely to vote for Trump.
+
+```{r  p2, fig.height=8.8, fig.width=8.8, fig.cap="Donald Trump supporters' profiles by states in the survey"}
+d1 <- survey %>% group_by(stateicp) %>%
+  summarise(rate = mean(Trump2020))  %>% arrange(desc(-rate))
+d1$stateicp <- factor(d1$stateicp, levels =d1$stateicp)
+ggplot(d1, aes(x=stateicp, y=rate,
+              label=round(rate*100,1))) + 
+  geom_point(stat='identity',  size= 9, color = "red")  +
+  geom_segment(aes(y = 0, 
+                   x = stateicp, 
+                   yend =rate, 
+                   xend = stateicp)) +
+  geom_text(color="white", size=3) +
+  labs(title="Donald Trump supporters' profiles by States", 
+       x= "",
+       y = "Voting rate") +
+  coord_flip() +
+    theme_economist()+
+  scale_y_continuous(label = percent)
+```
+
+Figure 3 shows the Donald Trump supporting rate by States in 2016 and 2020, clearly, there is a strong positive linear relationship between the vote rates in 2016 and 2020 for Trump. It indicates the supports across years are consistent.
+
+
+```{r  p3, fig.height=4.2, fig.width=7.8, fig.cap="Donald Trump supporting rate by States in 2016 and 2020"}
+d1 <- survey %>% group_by(stateicp) %>%
+  summarise(rate = mean(Trump2020),
+            rate2016 = mean(Trump2016),
+            news_sources_facebook = mean(news_sources_facebook == "Yes"),
+            twitter_ban = mean(twitter_ban == "worried")
+            )
+a1 <- d1
+ggplot(d1, aes(rate2016,rate)) + geom_point(color = "darkorange", size = 2) +
+  geom_label_repel(aes(label = stateicp), size = 3, max.overlaps  = 60) +
+  geom_smooth(method = "lm", fill = NA, color = "blue", alpha = 0.1, linetype = 2) +
+  labs(title="Donald Trump supporting rate by States in 2016 and 2020", 
+       x= "Voting rate in 2016",
+       y = "Voting rate in 2020") +
+    theme_economist()+
+  scale_y_continuous(label = percent) +
+    scale_x_continuous(label = percent)
+```
+
+
+Figure 4 shows the Donald Trump supporting rate in 2020 vs. Percentage of usage social media like twitter, facebook. Clearly, there is also a high correlation,  there is a strong positive linear relationship between supporting rate in 2020 vs. Percentage of usage social media like twitter, facebook. It means that more usage of twitter, facebook higher likely in supporting Trump.
+
+
+```{r  p4, fig.height=4.2, fig.width=7.8, fig.cap="Donald Trump supporting rate in 2020 vs. Percentage of usage social media like twitter, facebook"}
+ggplot(d1, aes(news_sources_facebook,rate)) + geom_point(color = "darkorange", size = 2) +
+  geom_label_repel(aes(label = stateicp), size = 3, max.overlaps  = 60) +
+  geom_smooth(method = "lm", fill = NA, color = "blue", alpha = 0.1, linetype = 2) +
+  labs(title="Donald Trump supporting rate vs. usage of twitter, facebook", 
+       x= "Percentage of usage social media like twitter, facebook",
+       y = "Voting rate in 2020") +
+    theme_economist()+
+  scale_y_continuous(label = percent) +
+    scale_x_continuous(label = percent)
+```
+
+Figure 5 shows the Donald Trump supporting rate in 2020 vs. Percentage of worried ban of twitter, also, people who are more care about ban of twitter is obviously more likely to support Trump. Thus, twitter is important in US election.
+
+
+```{r  p5, fig.height=4.2, fig.width=7.8, fig.cap="Donald Trump supporting rate in 2020 vs. Percentage of worried ban of twitter"}
+ggplot(d1, aes(twitter_ban,rate)) + geom_point(color = "darkorange", size = 2) +
+  geom_label_repel(aes(label = stateicp), size = 3, max.overlaps  = 60) +
+  geom_smooth(method = "lm", fill = NA, color = "blue", alpha = 0.1, linetype = 2) +
+  labs(title="Donald Trump supporting rate vs. worried ban of twitter", 
+       x= "Percentage of worried ban of twitter",
+       y = "Voting rate in 2020") +
+    theme_economist()+
+  scale_y_continuous(label = percent) +
+    scale_x_continuous(label = percent)
+```
+
+Figure 6 shows the Donald Trump supporting rate grouped by income, race and social media twitter&facebook usage, clearly, for both high and low income levels, for all race groups, using social media twitter&facebook group has a lower rate for Trump, it indicates Trump needs to occupy twitter to change twitter so he can own better supporing rate.
+
+
+```{r p6, fig.cap="Donald Trump supporting rate grouped by income, race and social media twitter&facebook usage", fig.height=4.2, fig.width=6.4}
+d1 <- survey %>% 
+  group_by(incomegroup, race, news_sources_facebook) %>% 
+  summarise(rate = mean(Trump2020))
+
+d1 %>% ggplot(aes(race, rate, fill =  news_sources_facebook)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~incomegroup ) +
+    labs(title="Donald Trump supporting rate", 
+         subtitle = "grouped by income, race and social media",
+       x= "Race",
+       y = "Voting rate in 2020") +
+    theme_economist()+
+  scale_y_continuous(label = percent) 
+
+```
+
+Figure 7 shows the Donald Trump supporters' age distribution grouped by usage of social media twitter, facebook, clearly, younger voters below about 40 years old are more likely not to support Trump who are using social media twitter&facebook than those who are not using social media twitter&facebook,  it indicates Trump needs to change twitter to own supports from younger voters.
+
+
+```{r  p7, fig.cap="Donald Trump supporters' age distribution grouped by usage of social media twitter, facebook", fig.height=4.2, fig.width=6.8}
+survey$trumpvote = ifelse(survey$Trump2020 ==1,"Vote Trump","Not Vote Trump")
+survey %>% ggplot(aes(age, color =  trumpvote)) +
+  geom_density() +
+  facet_wrap(~news_sources_facebook) +
+    labs(title="Donald Trump supporters' age distribution", 
+         subtitle = "grouped by usage of social media twitter, facebook",
+       x= "Age", color  = "") +
+    theme_economist() 
+
+```
+
+
+Figure 8 shows Donald Trump supporters' age distribution grouped by worried of twitter ban, clearly, voters who are more care about ban of twitter is more likely not to support Trump, it indicates Trump needs to change twitter to own supports from these groups of voters too.
+
+
+```{r  p8, fig.cap="Donald Trump supporters' age distribution grouped by worried of twitter ban", fig.height=4.2, fig.width=6.8}
+
+survey %>% ggplot(aes(age, color =  trumpvote)) +
+  geom_density() +
+  facet_wrap(~twitter_ban) +
+    labs(title="Donald Trump supporters' age distribution", 
+         subtitle = "grouped by worried of twitter ban",
+       x= "Age", color = "") +
+    theme_economist()
+```
+
+Figure 9 shows Donald Trump supporting rate grouped by vote group in 2016 and social media twitter,facebook, clearly, poeple who ever voted for Trump in 2016 has changed not to vote him in 2020 is more likely happend in group of using social media twitter,facebook.Thus, Trump needs to change twitter to re-own their supports.
+
+
+```{r  p9, fig.cap="Donald Trump supporting rate grouped by vote group in 2016 and social media twitter,facebook", fig.height=3.8, fig.width=6.6}
+d1 <- survey %>% 
+  group_by(Trump2016,  news_sources_facebook) %>% 
+  summarise(rate = mean(Trump2020))
+d1 %>% ggplot(aes(factor(Trump2016), fill = news_sources_facebook, rate)) +
+  geom_col(position = "dodge")+
+    labs(title="Donald Trump supporting rate", 
+         subtitle = "grouped by vote group in 2016 and social media",
+       x= "vote group in 2016",
+       y = "Voting rate in 2020",
+       fill = "Usage twitter,facebook") +
+    theme_economist()+
+  scale_y_continuous(label = percent) 
+
+```
+
+Overall, we could find that social media twitter,facebook and selected covariates are indeed related with voting outcome for Trump in 2020, so we can model the outcome on these factors.
+
+
+# Model
+
+
+This study plans to use the multiple logistic regression based on the Democracy Fund + UCLA Nationscape survey data (@citesurvey). Logistic regression model is a simple but widely used model which is appropriate for modelling binary outcome and interpreting factors affect the binary outcome. This study uses whether voters voted Trump in 2020 US election as response which is binary outcome, this study uses 
+the usage of social media twitter, facebook as the main independent variable of interest, this study also uses several important covariates including age, gender, income level, education leve, race groups, voted outcome in the year 2016 and so on. This study would use the Logistic regression model to investigate the effects of social media twitter, facebook on voting outcome for Trump.
+
+The equation (1) shows the math form of the logistic model. The logistic model is appropriate as it is appropriate for modelling binary outcome and interpreting factors affect the binary outcome, in this study, we encoded outcome voting for Trump as 1 and otherwise as 0 which is a binary dummy variable, also we want to know the effect of social media twitter, facebook on voting outcome for Trump and it can be explained by the estimates from the logistic model.
+
+\begin{equation} 
+logit(p) = \beta_0+ \beta_1 age + \beta_2 gender  + \beta_3 race +\beta_4 race + \beta_5 income + \beta_5 education + ... + \beta_i twitter usage +  \epsilon 
+\end{equation} 
+
+Another form is:
+
+\begin{equation} 
+log(\frac{p}{1-p}) = \beta_0+ \beta_1 age + \beta_2 gender  + \beta_3 race +\beta_4 race + \beta_5 income + \beta_5 education + ...  + \beta_i twitter usage \epsilon 
+\end{equation} 
+
+Note, the p is probability of voting for Trump in 2020, $\beta_i$ are coefficients to be estimated, $\epsilon$ is the error term. The estimates are log-odds of coefficients, we also can have odds ratio by using exp() function in R (@citeR).
+
+The estimated probabilty in voting for Trump by logistic model is in equation (3):
+
+\begin{equation} 
+p = \frac{exp(\beta_0+ \beta_1 age + \beta_2 gender  + \beta_3 race +\beta_4 race + \beta_5 income + \beta_5 education + ... + \beta_i twitter usage)}{1+exp(\beta_0+ \beta_1 age + \beta_2 gender  + \beta_3 race +\beta_4 race + \beta_5 income + \beta_5 education + ... + \beta_i twitter usage)} 
+\end{equation} 
+
+
+We fit this model on the  Democracy Fund + UCLA ationscape survey data (@citesurvey) use the `glm` function in R (@citeR) with the logit link and then interpre the results to investigate the question of interest in this study. 
+
+
+The main advantages of using logistic model are as below:
+
+1). Fast enough for large sample
+
+2). Easy to understand of the model estimates
+
+3). Easy to include variables as many as possible
+
+4). Easy for using both continuous variables like age or categorical variables like gender, income level, education level
+
+5). Good model's interpretability of effects of factors
+
+6). Nature for vote election problem which has response to be binary outcome
+
+The main dis-advantages of using logistic model are as below:
+
+
+1). Not suitable for non-linear effects
+
+2). Multi-collinearity issues
+
+3). Sensitive to imbalanced responses
+
+4). Worse performance in predicting probability
+
+5). Can not handle random effects
+
+However, in this study we do not consider  random effects of individual voters  which would make the model too complicated as there are too many voters. The assumption of logistic model is not normality of errors but independence of errors and large sample size. We have large sample size which is over 3000, also, we have independence of errors  as the data for voters which are supposed to be independent.
+
+Also, note in this study that, the model has some weakness. First, not all covariates are included, so the results might have omitted important variables biasness. Second, only Biden and Trump are considered, no other candidates, the voting group encoded as 0 might be some complicated as it stands for voting for Biden not voting for other candidates who is not Trump. At last, the results of the model dependend on the survey data seriously, different data lead to different estimates.
+
+
+
+# Results
+
+The reference group in the model is the young voters 18-34 age group female hispanic  and blacks with above median income level and above BA education level who are not voted for Trump and who used social media twitter and facebook but not worried ban of twitter.
+
+The results of estimates are lots for dummy variables, this because the logistic model would created dummies for the categorical variables, the baseline group and the difference with the baseline group are the estimates of log-odds for these dummies. For example, the variable "genderMale" is compared with females which means the difference between females and males in voting for Trump when we fixed effects of all other groups. 
+
+Table 1 and figure 10 show the Logistic model estimates in log-odds and the table 2 shows the Logistic model estimates in odds ratio. From the table 1 and figure 10, we can easily find which variables have negative effects and which ones have positive effects on the response as well as the 95% confidence intervals with the effects. However, it is more easier to explain the effects of variables in odds ratio than log odds by using table 2. Figure 11 shows the model diagnostics, clearly, the residuals plot show no big issues, the cook's distance shows few strong influence points. 
+
+
+
+```{r}
+survey$trumpvote = NULL
+survey$age = NULL
+survey$stateicp = NULL
+fit <- glm(Trump2020 ~ ., 
+           data = survey, 
+           family = binomial(link = "logit"))
+coefs <- broom::tidy(fit, conf.int = T)
+
+knitr::kable(coefs[,-5],
+             caption = "Logistic model estimates in log-odds",
+             digits = 3) 
+```
+
+```{r  p10, fig.cap="Logistic model estimates in log-odds", fig.height = 6.8, fig.width = 6.8}
+coefs2 <- coefs %>%arrange(desc(-estimate))
+coefs2$term <- factor(coefs2$term , levels = coefs2$term )
+coefs2$color = factor(ifelse(coefs2$estimate > 0, "positive","negative"))
+ggplot(coefs2, aes(estimate, term)) +
+  geom_point(aes(color = color)) +
+  geom_errorbar(aes(xmin = conf.low, xmax = conf.high, color = color)) +
+  labs(title = "Logistic model estimates in log odds",
+       x = "Coefficient",
+       y = "",
+       color = "") + 
+  theme_light() +
+    scale_color_manual(values = c("red", "blue"))
+```
+
+
+Table 2 shows that  Logistic model estimates in odds ratio as well the  95% Confidence intervals  for the corresponding odds ratio. The odds ratios of age groups above 18-34 are all over 1s, for age group 36-50, the OR is 1.48, for age group 50-65, the OR is 2.01, for age group 65+, the OR is 1.88,  all these groups have 95% CIs' lower bounds larger than 1, so it means the older age groups are more likely to support Trump significantly. The OR for males is 0.61 which means males is 39% times lower in odds of voting for Trump compared with females fixed others. The races whites and other groups all show OR much larger than 1 which are above 2s, so it means whites and other groups are much more likely to support Trump significantly than blacks fixed others. For income level, high income group is more likely to support Trump while low educated groups are also more likely to support Trump, non-hispanic is also more likely to support Trump.
+
+Table 2 also shows voters who ever voted Trump in 2016 are about 35 times higher in odds to vote Trump in 2020 than who not voted Trump. This is an important variable to control. Also, the worried ban of twitter group has about 2 times higher in odds of voting Trump than who are not worried ban of twitter. 
+
+```{r}
+fit2 <- confint(fit)
+d <- data.frame(Variable = names(coef(fit)),
+                OR = exp(coef(fit)),
+                conf.low = exp(fit2[,1]),
+                conf.high = exp(fit2[,2])
+                )
+row.names(d) <- 1:nrow(d)
+knitr::kable(d, 
+             caption = "Logistic model estimates in odds ratio",
+             digits = 3)
+```
+
+
+
+```{r  p11, fig.cap="Model diagnostics plots",  fig.height = 6.6, fig.width=6.6}
+par(mfrow = c(2,1))
+plot(residuals(fit, type = "response") ~ fitted.values(fit),
+     ylab = "residuals", xlab = "fitted values")
+plot(fit, 4)
+par(mfrow = c(1,1))
+```
+
+
+And controlled all other effects, it was found from table 2 that the estimate of usage of socila media twitter and facebook has OR to be 1.45, so it means that controlling all other important variables in this model, the not usage group of socila media twitter and facebook is about 45% times higher in odds of voting for Trump than who uses socila media twitter and facebook. 
+
+Because this study aims to investigate the question that why Musk buys twitter and why Trump lanchs truth social, the hypothesis is that social media like  twitter could not affect the voting willingness of voters in US election. And from the model estimates, this study rejects this null hypothesis, it was found that twitter could affect the voting willingness of voters in US election significantly after controlling other important factors.
+
+
+# Discussion
+
+## Findings
+
+After all of the above work in the study, the main findings from exploring analysis is that age group,gender, income level, education, race diferences are all related to voting outcome for Trump in the year 2020, also, for states, the differences are more clearly, some states are much more likely to support Trump than other states. More importantly, it was found that social media twitter,facebook and selected covariates are indeed related with voting outcome for Trump in 2020, so we can model the outcome on these factors. 
+
+And based on the model estimates, after controlling all other effects, it was found the estimate of usage of socila media twitter and facebook has OR to be 1.45 with 95% confidence interval to be (1.13, 1.86), which means that controlling all other important variables in this model,  not usage group of socila media twitter and facebook is about 45% times higher in odds of voting for Trump than who uses socila media twitter and facebook and we have 95% confidence this higher difference would fall into the range from 13% to 86%.
+
+Because this study aims to investigate the question of interest why Musk buys twitter and why Trump lanchs truth social, from the model estimates, this study rejects the  null hypothesis that social media like  twitter could not affect the voting willingness of voters in US election. It was found that usage of social media like twitter could affect the voting willingness of voters in US election significantly after controlling other important factors. 
+
+
+## Importance of social media twitter and facebook
+
+Besides this study found that usage of social media like twitter could affect the voting willingness of voters in US election significantly after controlling other important factors.  With the development of networking technology, social networking sites such as Twitter are playing an increasingly important role in the US presidential election. The Twitter social networking site has become a basic campaign tool. Public candidates, political more and more use tweets to disseminate and capture ampaign information to attract voters  who are very interested in politics to spread information widely and create news so in orde to earn supports from them. This might be the reasons why Musk buys twitter and why Trump lanchs truth social as Twitter provides voice and power to millions of voters and allows candidates to monitor the effects of their information and adjust it anytime on time to earn more supports.
+
+
+
+## Controlling covariates
+
+This study used lots of Controlling covariates to adjust the effects of the usage of social media like  twitter and facebook, it was found that most of these Controlling covariates are indeed affect the voting outcome of Trump in 2020. From the model estimates, for age group 36-50, the OR is 1.48, for age group 50-65, the OR is 2.01, for age group 65+, the OR is 1.88,  all these groups are more likely to support Trump significantly so older groups are mode likely to vote for Trump, this because they might be affected by the slogan of Trump that makes USA great again, due to these older voters have saw the better USA in the past decades when countries like China has not been grown up. Also, there are significant differences in supports of males and females, income level, education level. Males is about 39% times lower in odds of voting for Trump compared with females fixed others, also, low educated groups are also more likely to support Trump. This might be due to the reference group used in this study and imbalance data in the study, generally, males is more likely to vote Trump. The races whites and other groups all show OR much larger than 1 indicating whites and other groups are much more likely to support Trump significantly than blacks fixed others. This is consistent with findings from most of studies, also, rich people is likely to support Trump. Due to these covariates have significant effects in affecting estimates, it is reasonable to include them in the study as controlling covariates.
+
+
+## Weaknesses and next steps
+
+
+There are also some weakness for this study. First, the survey data might be selection bias and non-response bias, as the survey was conducted online, voters could not respone to it lead to on-response bias and as the survey uses stratified sampling, several subgroups in this survey data might be has selection biasness. Second, imblanced data issues existed in this survey data, for examples, the proportions of whites are much higher than others. 
+
+Also, the model results might have omitted important variables bias, although this study considered lots of related factors and show they are indeed needed to be inclueded, however, there are still other important variables should be considered, these variables might be opinions to policies like ban of gun, medical health, covid-19 issues, tax and so on. There is also one weakness that the model depend on cleaned data, we divided several groups for variables in this study, different divisions could affect model estimtes clearly. 
+
+In future work, we might consider more other important variables like  opinions to policies like ban of gun, medical health, covid-19 issues, tax and so on. We might also consider mixed effects model using states as groups, we could expect the results to be improved in the next steps in future studies.
+
+
+
+\newpage
+
+\appendix
+
+# Appendix {-}
+
+
+# Additional details
+
+```{r}
+knitr::kable(a1, digits = 3, caption = "Voting rates, usage twitter,facebook, worried ban of twitter percentages by states")
+```
+
+
+\newpage
+
+
+# References
+
+

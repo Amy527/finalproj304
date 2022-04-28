@@ -1,0 +1,7 @@
+# starter_folder
+
+This repo stores the project of final paper of study whether social media like twitter, facebook is indeed affect the US election.
+
+This study aims to investigate whether social media like twitter, facebook is indeed affect the US election based on the Democracy Fund + UCLA Nationscape survey data  by logistic regression model. Logistic regression model is a simple but widely used model which is appropriate for modelling binary outcome and interpreting factors affect the binary outcome. This study finds that not usage group of socila media twitter and facebook is about 45% times higher in odds of voting for Trump than who uses socila media twitter and facebook and we have 95% confidence this  would fall into the range from 13% to 86%. 
+
+It is organised as follows, in data section, we introduce the Democracy Fund + UCLA ationscape survey data and give an overview of reflections from the survey data. In model section, we introduce the logistic regression model. In results section, we interpret the model results as well as model diagnostics. At last, in the discussion section, we discuss the findings, results and weaknesses of the study as well as future work. The study is carried out using R ,  Rmarkdown , tidyverse, ggplot2, ggthemes, ggrepel,  dplyr, scales , broom,  knitr. 
